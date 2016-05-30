@@ -7,10 +7,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
     .directive('gridPanel', ['$animate', '$compile', '$window', '$document', '$timeout', function($animate, $compile, $window, $document, $timeout) {
             return {
                 restrict: 'AE',
-                scope: {
-                    onPanelOpened: '&',
-                    onPanelClosed: '&'
-                },
+                scope: false,
                 compile: function(tElement, tAttr) {
                     var windowElement = angular.element($window);
                     var htmlAndBodyElement = angular.element($document).find('html, body');
@@ -55,7 +52,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
 
                                     itemElement.addClass('grid-panel-item-' + i).on('click', function(i, item) {
                                         return function() {
-                                            _onGridItemClick(i, item);
+                                            _onGridItemClick(i, item, len);
                                         };
                                     }(i, item));
 
@@ -65,7 +62,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
                                 }
                             }
 
-                            function _onGridItemClick(index, item) {
+                            function _onGridItemClick(index, item, itemsCount) {
                                 var gridItem = $element.find('.grid-panel-item-' + index);
 
                                 var lastGridItem = getLastGridItem(gridItem);
@@ -77,7 +74,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
                                 else {
                                     addPanel();
                                 }
-
+                                $scope.showProductDesc(item, itemsCount-index-1);
                                 updateTriangle();
 
                                 scrollToPanel();
@@ -122,11 +119,11 @@ angular.module('ngGridPanel', ['ngAnimate'])
                                     $compile(panel)(panelScope);
                                     panelScope.$digest();
 
-                                    if(isNewPanel) {
-                                        $scope.onPanelOpened({
-                                            item: item
-                                        });
-                                    }
+                                    // if(isNewPanel) {
+                                    //     $scope.onPanelOpened({
+                                    //         item: item
+                                    //     });
+                                    // }
                                 }
 
                                 function updatePanel() {
@@ -160,10 +157,20 @@ angular.module('ngGridPanel', ['ngAnimate'])
 
                                         var windowBottom = windowElement.scrollTop() + (windowElement.height() / 2);
 
+                                                var width = window.innerWidth;
                                         if(panelOffset > windowBottom) {
+                                            if (width <= 1400) {
                                             htmlAndBodyElement.animate({
-                                                scrollTop: panelOffset - (gridItem.outerHeight(true) * 2)
+                                                scrollTop: panelOffset - (gridItem.outerHeight(true) - 200)
                                             }, 500);
+                                            } else {
+                                            htmlAndBodyElement.animate({
+                                                scrollTop: panelOffset - (gridItem.outerHeight(true))
+                                            }, 500);
+                                            }
+                                            // htmlAndBodyElement.animate({
+                                            //     scrollTop: panelOffset - (gridItem.outerHeight(true))
+                                            // }, 500);
                                         }
                                     }
                                 }
@@ -174,7 +181,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
                                     }
 
                                     panel.find('.triangle').css({
-                                        left: gridItem.position().left + (gridItem.width() / 2)
+                                        left: gridItem.position().left + (gridItem.width() / 3)
                                     });
                                 }
                             }
