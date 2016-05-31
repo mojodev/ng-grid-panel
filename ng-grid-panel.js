@@ -30,6 +30,7 @@ angular.module('ngGridPanel', ['ngAnimate'])
                     var panel;
                     var panelOpenedAfter;
                     var panelScope;
+                    var lastClickIndex;
 
                     return {
                         pre: function($scope, $element) {
@@ -68,11 +69,20 @@ angular.module('ngGridPanel', ['ngAnimate'])
                                 var lastGridItem = getLastGridItem(gridItem);
                                 var lastGridItemClass = lastGridItem.attr('class');
 
-                                if(panel && panelOpenedAfter === lastGridItemClass) {
+                                if(lastClickIndex === index){
+                                    closePanel();
+                                }
+                                else if(panel && panelOpenedAfter === lastGridItemClass) {
                                     updatePanel();
                                 }
                                 else {
                                     addPanel();
+                                }
+                                if(lastClickIndex !== index){
+                                    lastClickIndex = index;
+                                }
+                                else{
+                                    lastClickIndex = undefined;
                                 }
                                 $scope.showProductDesc(item, itemsCount-index-1);
                                 updateTriangle();
